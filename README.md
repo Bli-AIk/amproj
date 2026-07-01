@@ -3,7 +3,6 @@
 [![license](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue)](LICENSE-APACHE) <img src="https://img.shields.io/github/repo-size/Bli-AIk/amproj.svg"/> <img src="https://img.shields.io/github/last-commit/Bli-AIk/amproj.svg"/> <br>
 <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" />
 
-> Current Status: Active Development
 
 **amproj** - Data extraction layer for `.amproj` project files with C-ABI support.
 
