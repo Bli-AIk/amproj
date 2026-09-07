@@ -68,8 +68,7 @@ impl AmCoordConfig {
 pub static AM_COORD_AM_NATIVE: AmCoordConfig =
     AmCoordConfig::from_coord(CoordMappingConfig::AM_NATIVE);
 #[unsafe(no_mangle)]
-pub static AM_COORD_BEVY_2D: AmCoordConfig =
-    AmCoordConfig::from_coord(CoordMappingConfig::BEVY_2D);
+pub static AM_COORD_BEVY_2D: AmCoordConfig = AmCoordConfig::from_coord(CoordMappingConfig::BEVY_2D);
 #[unsafe(no_mangle)]
 pub static AM_COORD_UNITY_UI: AmCoordConfig =
     AmCoordConfig::from_coord(CoordMappingConfig::UNITY_UI);

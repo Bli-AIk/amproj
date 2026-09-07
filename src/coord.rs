@@ -196,8 +196,7 @@ pub fn multiply_4x4_column_major(a: [f32; 16], b: [f32; 16]) -> [f32; 16] {
 pub fn transpose_4x4(matrix: [f32; 16]) -> [f32; 16] {
     [
         matrix[0], matrix[4], matrix[8], matrix[12], matrix[1], matrix[5], matrix[9], matrix[13],
-        matrix[2], matrix[6], matrix[10], matrix[14], matrix[3], matrix[7], matrix[11],
-        matrix[15],
+        matrix[2], matrix[6], matrix[10], matrix[14], matrix[3], matrix[7], matrix[11], matrix[15],
     ]
 }
 

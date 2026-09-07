@@ -353,9 +353,17 @@ fn merge_effect_impls(
         target
             .entry(id)
             .and_modify(|existing| {
-                extend_unique_fields(&mut existing.implemented_fields, effect.implemented_fields.drain(..));
-                extend_unique_fields(&mut existing.pattern_fields, effect.pattern_fields.drain(..));
-                existing.source_lines.extend(effect.source_lines.iter().copied());
+                extend_unique_fields(
+                    &mut existing.implemented_fields,
+                    effect.implemented_fields.drain(..),
+                );
+                extend_unique_fields(
+                    &mut existing.pattern_fields,
+                    effect.pattern_fields.drain(..),
+                );
+                existing
+                    .source_lines
+                    .extend(effect.source_lines.iter().copied());
             })
             .or_insert(effect);
     }

@@ -218,7 +218,13 @@ pub extern "C" fn am_get_font_data(
     out_buffer: *mut u8,
     buffer_size: i32,
 ) -> i32 {
-    resource_data(handle, font_name, out_buffer, buffer_size, ResourceKind::Font)
+    resource_data(
+        handle,
+        font_name,
+        out_buffer,
+        buffer_size,
+        ResourceKind::Font,
+    )
 }
 
 impl ProjectState {

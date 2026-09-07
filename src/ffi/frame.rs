@@ -6,9 +6,9 @@ use crate::loader::AmProject;
 use crate::schema::AmLayer;
 
 use super::element::{
-    base_element, fill_effect_fields, fill_shape_fields, fill_stroke_fields, is_layer_active,
-    mapped_world_matrix, normalized_layer_time, parent_id, property_size, push_string,
-    saturating_i32, shape_kind, text_align, transform_values,
+    base_element, blend_mode, fill_effect_fields, fill_shape_fields, fill_shape_params,
+    fill_stroke_fields, is_layer_active, mapped_world_matrix, normalized_layer_time, parent_id,
+    property_size, push_string, saturating_i32, shape_kind, text_align, transform_values,
 };
 use super::types::{FlatElement, identity_matrix};
 
@@ -55,7 +55,7 @@ fn collect_layers(
                     continue;
                 }
                 let t = normalized_layer_time(shape.start_time, shape.end_time, time_ms);
-                let (size, size_keyframes) = property_size(&shape.properties, &shape.shape_type)
+                let (size, size_keyframes) = property_size(&shape.properties, &shape.shape_type, t)
                     .unwrap_or(([100.0, 100.0], Vec::new()));
                 let local = transform_values(
                     &shape.transform,
@@ -82,9 +82,14 @@ fn collect_layers(
                     shape.end_time,
                 );
                 element.kind = shape_kind(&shape.shape_type);
-                element.shape_params[0] = size[0];
-                element.shape_params[1] = size[1];
-                element.shape_params[2] = size_keyframes.len() as f32;
+                element.blend_mode = blend_mode(&shape.blending);
+                fill_shape_params(
+                    &mut element,
+                    &shape.properties,
+                    &shape.shape_type,
+                    size_keyframes.len(),
+                    t,
+                );
                 element.path_data = shape
                     .path_element
                     .as_ref()
@@ -99,7 +104,10 @@ fn collect_layers(
                     t,
                     strings,
                 );
-                fill_stroke_fields(&mut element, shape.stroke.as_ref().or(shape.borders.first()));
+                fill_stroke_fields(
+                    &mut element,
+                    shape.stroke.as_ref().or(shape.borders.first()),
+                );
                 fill_effect_fields(&mut element, &shape.effects);
                 elements.push(element);
                 *layer_index += 1;
@@ -163,7 +171,7 @@ fn collect_layers(
                     continue;
                 }
                 let t = normalized_layer_time(image.start_time, image.end_time, time_ms);
-                let size = property_size(&image.properties, "")
+                let size = property_size(&image.properties, "", t)
                     .map(|(size, _)| size)
                     .unwrap_or([100.0, 100.0]);
                 let local = transform_values(
@@ -259,6 +267,7 @@ fn collect_layers(
                     embed.end_time,
                 );
                 element.kind = 9;
+                element.blend_mode = blend_mode(&embed.blending);
                 fill_shape_fields(
                     &mut element,
                     embed.fill_type.as_str(),
@@ -317,6 +326,23 @@ fn collect_layers(
                     camera.end_time,
                 );
                 element.kind = 10;
+                element.shape_params[0] = crate::animation::interpolate_float(&camera.fov, t)
+                    .or(camera.fov.value)
+                    .unwrap_or(60.0);
+                element.shape_params[1] = camera
+                    .transform
+                    .location
+                    .keyframes
+                    .first()
+                    .and_then(|keyframe| crate::schema::parse_vec3(&keyframe.value).ok())
+                    .map(|value| value[2])
+                    .or_else(|| camera.transform.location.value.map(|value| value[2]))
+                    .unwrap_or(-1247.0);
+                element.shape_params[2] =
+                    crate::animation::interpolate_vec3(&camera.transform.location, t)
+                        .or(camera.transform.location.value)
+                        .map(|value| value[2])
+                        .unwrap_or(element.shape_params[1]);
                 elements.push(element);
                 *layer_index += 1;
             }
